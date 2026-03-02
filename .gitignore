@@ -125,6 +125,7 @@ celerybeat.pid
 .venv
 env/
 venv/
+!.venv/pyvenv.cfg
 ENV/
 env.bak/
 venv.bak/
@@ -216,3 +217,28 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode,windows
+
+# Archivos de datos específicos y temporales
+data/raw/*.xlsx
+data/raw/*.ods
+data/raw/*.pdf
+data/raw/*.txt
+
+# Versiones con marca de tiempo (ej: arabica_data_cleaned.20260302...)
+data/raw/*.[0-9]*L.*
+data/raw/*.[0-9]*V.*
+
+# Ignorar archivos fusionados si no son la versión final oficial
+data/raw/*_fusionado.csv
+# Dataset Actual.
+!data/raw/coffee_quality_fusionado.csv
+
+# Orden: Asegúrate de que la línea con ! esté debajo de la regla general. Si estuviera arriba, la regla general la volvería a ocultar.
+# 
+# Archivos ya rastreados: Si por algún motivo ya habías hecho un git add de los otros archivos fusionados antes de poner estas reglas, Git los seguirá siguiendo. En ese caso, tendrías que borrarlos del índice con git rm --cached [nombre_del_archivo].
+
+
+# Archivos de configuración de paquetes (si decides no trackearlos)
+# uv.lock ya está en tu árbol, normalmente se incluye, 
+# pero si quieres ignorarlo, descomenta la siguiente línea:
+# uv.lock
