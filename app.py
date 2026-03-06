@@ -1,4 +1,4 @@
-# Importar librerias necesarias.
+# Importar librerías
 import streamlit as st
 import joblib
 import pandas as pd
@@ -14,16 +14,13 @@ st.set_page_config(
     initial_sidebar_state = "expanded",
 )
 
-
 # ══════════════════════════════════════════════════════════════════════════════
 # BLOQUE 0 — CSS
-# Solo se incluyen las reglas que realmente tienen efecto en la app.
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&family=DM+Mono:wght@400;500&display=swap');
 
-/* ── Variables de color ── */
 :root {
     --bg:          #F8FAF9;
     --bg-card:     #FFFFFF;
@@ -39,7 +36,6 @@ st.markdown("""
     --shadow:      0 2px 12px rgba(22,163,74,0.08);
 }
 
-/* ── Fondo y fuente global ── */
 html, body, [data-testid="stAppViewContainer"], .main {
     background: var(--bg) !important;
     font-family: 'DM Sans', sans-serif !important;
@@ -48,7 +44,6 @@ html, body, [data-testid="stAppViewContainer"], .main {
 .block-container { background: transparent !important; padding-top: 2rem !important; }
 header[data-testid="stHeader"] { background: transparent !important; }
 
-/* ── Sidebar ── */
 [data-testid="stSidebar"] {
     background: var(--bg-sidebar) !important;
     border-right: 1px solid var(--border) !important;
@@ -57,8 +52,6 @@ header[data-testid="stHeader"] { background: transparent !important; }
     border: none !important; height: 1px !important;
     background: var(--border) !important; margin: 1.2rem 0 !important;
 }
-
-/* ── Labels de inputs en sidebar ── */
 [data-testid="stSidebar"] .stNumberInput label,
 [data-testid="stSidebar"] .stSlider label,
 [data-testid="stSidebar"] .stSelectbox label {
@@ -68,13 +61,7 @@ header[data-testid="stHeader"] { background: transparent !important; }
     letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
 }
-
-/* ── Barra del slider en verde ── */
-[data-testid="stSidebar"] .stSlider > div > div > div {
-    background: var(--green) !important;
-}
-
-/* ── Inputs y selectbox ── */
+[data-testid="stSidebar"] .stSlider > div > div > div { background: var(--green) !important; }
 [data-testid="stSidebar"] .stNumberInput input,
 [data-testid="stSidebar"] .stSelectbox > div > div {
     background: var(--bg-card) !important;
@@ -88,7 +75,7 @@ header[data-testid="stHeader"] { background: transparent !important; }
     box-shadow: 0 0 0 3px var(--green-dim) !important;
 }
 
-/* ── Radio toggle (selector de modelo) ── */
+/* ── Radio toggle ── */
 [data-testid="stSidebar"] div[role="radiogroup"] {
     display: flex !important;
     background: var(--border) !important;
@@ -97,98 +84,59 @@ header[data-testid="stHeader"] { background: transparent !important; }
     width: 100% !important;
 }
 [data-testid="stSidebar"] div[role="radiogroup"] label {
-    flex: 1 1 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    border-radius: 8px !important;
-    padding: 7px 4px !important;
-    font-size: 0.88rem !important;
-    font-weight: 500 !important;
-    color: var(--text-dim) !important;
-    cursor: pointer !important;
+    flex: 1 1 0 !important; display: flex !important;
+    align-items: center !important; justify-content: center !important;
+    border-radius: 8px !important; padding: 7px 4px !important;
+    font-size: 0.88rem !important; font-weight: 500 !important;
+    color: var(--text-dim) !important; cursor: pointer !important;
     transition: all 0.2s ease !important;
 }
 [data-testid="stSidebar"] div[role="radiogroup"] label > div:first-child,
 [data-testid="stSidebar"] div[role="radiogroup"] input[type="radio"] { display: none !important; }
 [data-testid="stSidebar"] div[role="radiogroup"] label:has(input:checked) {
-    background: var(--green) !important;
-    color: #FFFFFF !important;
-    font-weight: 700 !important;
+    background: var(--green) !important; color: #FFFFFF !important; font-weight: 700 !important;
 }
 
-/* ── Botón ── */
 .stButton > button {
-    background: var(--green) !important;
-    color: #FFFFFF !important;
-    font-weight: 700 !important;
-    border: none !important;
-    border-radius: var(--radius-sm) !important;
-    padding: 12px 24px !important;
-    width: 100% !important;
-    transition: all 0.2s ease !important;
+    background: var(--green) !important; color: #FFFFFF !important;
+    font-weight: 700 !important; border: none !important;
+    border-radius: var(--radius-sm) !important; padding: 12px 24px !important;
+    width: 100% !important; transition: all 0.2s ease !important;
     box-shadow: var(--shadow) !important;
 }
-.stButton > button:hover {
-    background: var(--green-light) !important;
-    transform: translateY(-2px) !important;
-}
+.stButton > button:hover { background: var(--green-light) !important; transform: translateY(-2px) !important; }
 
-/* ── Columnas como cards ── */
 div[data-testid="column"] {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: var(--radius) !important;
-    padding: 24px !important;
+    background: var(--bg-card) !important; border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important; padding: 24px !important;
     box-shadow: var(--shadow) !important;
 }
-
-/* ── Métricas ── */
 [data-testid="stMetricValue"] {
-    font-family: 'DM Mono', monospace !important;
-    font-size: 1.6rem !important;
-    font-weight: 600 !important;
-    color: var(--green) !important;
+    font-family: 'DM Mono', monospace !important; font-size: 1.6rem !important;
+    font-weight: 600 !important; color: var(--green) !important;
 }
 [data-testid="stMetricLabel"] {
-    color: var(--text-dim) !important;
-    font-size: 0.72rem !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.06em !important;
+    color: var(--text-dim) !important; font-size: 0.72rem !important;
+    text-transform: uppercase !important; letter-spacing: 0.06em !important;
 }
 div[data-testid="stMetric"] {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: var(--radius) !important;
-    padding: 16px !important;
+    background: var(--bg-card) !important; border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important; padding: 16px !important;
     box-shadow: var(--shadow) !important;
 }
-
-/* ── Tabs ── */
 .stTabs [data-baseweb="tab-list"] {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: var(--radius-sm) !important;
-    padding: 4px !important;
+    background: var(--bg-card) !important; border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important; padding: 4px !important;
 }
 .stTabs [data-baseweb="tab"] {
-    border-radius: 8px !important;
-    font-weight: 600 !important;
-    color: var(--text-dim) !important;
-    padding: 8px 20px !important;
+    border-radius: 8px !important; font-weight: 600 !important;
+    color: var(--text-dim) !important; padding: 8px 20px !important;
 }
-.stTabs [aria-selected="true"] {
-    background: var(--green) !important;
-    color: #FFFFFF !important;
-}
-
-/* ── Divider ── */
+.stTabs [aria-selected="true"] { background: var(--green) !important; color: #FFFFFF !important; }
 hr {
     border: none !important; height: 1px !important;
     background: var(--border) !important; margin: 1.8rem 0 !important;
 }
-
-/* ── Ocultar botón colapsar sidebar ── */
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapseButton"] { display: none !important; }
 </style>
@@ -197,59 +145,37 @@ hr {
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BLOQUE 1 — Configuración de modelos
-# Para añadir un modelo nuevo solo hay que añadir una entrada aquí.
 # ══════════════════════════════════════════════════════════════════════════════
 MODELOS = {
 
     " XGBoost": {
-        "path"          : Path("models/Camila"),
-        "cols_cat"      : ["Country of Origin", "Color"],
-        "metricas"      : {
+        "path"    : Path("models/Camila"),
+        "metricas": {
             "F1-Score"   : "0.955",
             "CV F1 Media": "0.945 ± 0.005",
             "ROC-AUC"    : "0.990",
             "Overfitting": "+0.032  ✅",
         },
-        "usa_uniformity": True,
-        "usa_clean_cup" : True,
-        "usa_sweetness" : True,
-        "usa_altitud"   : False,
-        "usa_processing": False,
-        "usa_variety"   : False,
     },
 
     " Random Forest": {
-        "path"          : Path("models/Jonathan"),
-        "cols_cat"      : ["Color", "Country of Origin", "Processing Method", "Variety"],
-        "metricas"      : {
+        "path"    : Path("models/Jonathan"),
+        "metricas": {
             "F1-Score"   : "0.953",
             "CV F1 Media": "0.932 ± 0.019",
             "ROC-AUC"    : "0.974",
             "Overfitting": "+0.014  ✅",
         },
-        "usa_uniformity": False,
-        "usa_clean_cup" : False,
-        "usa_sweetness" : False,
-        "usa_altitud"   : True,
-        "usa_processing": True,
-        "usa_variety"   : True,
     },
 
-    " XGBoost 2": {
-        "path"          : Path("models/Juanma"),
-        "cols_cat"      : ["Country of Origin", "Color"],
-        "metricas"      : {
+        " XGBoost 2": {
+        "path"    : Path("models/Juanma"),
+        "metricas": {
             "F1-Score"   : "0.947",
             "CV F1 Media": "0.931 ± 0.021",
             "ROC-AUC"    : "0.970",
             "Overfitting": "+0.008  ✅",
         },
-        "usa_uniformity": True,
-        "usa_clean_cup" : True,
-        "usa_sweetness" : True,
-        "usa_altitud"   : False,
-        "usa_processing": False,
-        "usa_variety"   : False,
     },
 
 }
@@ -260,15 +186,27 @@ MODELOS = {
 # ══════════════════════════════════════════════════════════════════════════════
 @st.cache_resource
 def cargar_modelo(nombre: str):
-    path          = MODELOS[nombre]["path"]
-    modelo        = joblib.load(path / "model.pkl")
-    feature_names = joblib.load(path / "feature_names.pkl")
-    encoders      = joblib.load(path / "encoders.pkl")
-    return modelo, feature_names, encoders
+    path = MODELOS[nombre]["path"]
+    try:
+        modelo        = joblib.load(path / "model.pkl")
+        feature_names = joblib.load(path / "feature_names.pkl")
+        encoders      = joblib.load(path / "encoders.pkl")
+    except FileNotFoundError as e:
+        # st.stop() detiene la ejecución del script aquí — no muestra más errores
+        st.error(f"❌ No se encontró el archivo: `{e.filename}`\n\n"
+                    f"Verifica que la carpeta `{path}` contiene "
+                    f"`model.pkl`, `feature_names.pkl` y `encoders.pkl`.")
+        st.stop()
+
+    # scaler.pkl es opcional — solo se carga si existe
+    scaler_path = path / "scaler.pkl"
+    scaler = joblib.load(scaler_path) if scaler_path.exists() else None
+
+    return modelo, feature_names, encoders, scaler
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# BLOQUE 3 — Historial
+# BLOQUE 3 — Historial en session_state
 # ══════════════════════════════════════════════════════════════════════════════
 if "historial" not in st.session_state:
     st.session_state.historial = []
@@ -276,16 +214,24 @@ if "historial" not in st.session_state:
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BLOQUE 4 — Helpers
-# Funciones pequeñas que se usan en varios sitios.
 # ══════════════════════════════════════════════════════════════════════════════
 def titulo_seccion(texto: str):
+    st.markdown(
+        f'<div style="font-size:0.72rem;color:#6B7F73;text-transform:uppercase;'
+        f'letter-spacing:0.1em;font-weight:600;margin-bottom:10px;">{texto}</div>',
+        unsafe_allow_html=True,
+    )
 
-    st.markdown(f"""
-        <div style="font-size:0.72rem;color:#6B7F73;text-transform:uppercase;
-            letter-spacing:0.1em;font-weight:600;margin-bottom:11px;">
-            {texto}
-        </div>
-    """, unsafe_allow_html=True)
+def colores_resultado(es_specialty: bool) -> dict:
+    """Devuelve los colores de la tarjeta según el resultado."""
+    return {
+        "text"  : "#16A34A" if es_specialty else "#DC2626",
+        "bg"    : "#F0F7F3" if es_specialty else "#FEF2F2",
+        "border": "#D1E8DA" if es_specialty else "#FECACA",
+        "icono" : "✅"      if es_specialty else "❌",
+        "sub"   : "SCAA Protocol Compliant" if es_specialty
+                    else "Does not meet threshold (82.5 pts)",
+    }
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -294,8 +240,8 @@ def titulo_seccion(texto: str):
 with st.sidebar:
 
     st.markdown("""
-        <div style="text-align:center; padding: 8px 0 20px 0;">
-            <div style="font-size:4.5rem; color:black;">☕</div>
+        <div style="text-align:center;padding:8px 0 20px 0;">
+            <div style="font-size:4.5rem;color:black">☕</div>
             <div style="font-family:'DM Sans',sans-serif;font-weight:700;
                 font-size:1.45rem;color:#16A34A;margin-top:8px;">
                 Digital Q-Grader AI
@@ -317,14 +263,14 @@ with st.sidebar:
         horizontal       = True,
     )
 
-    # Cargamos modelo y su configuración
-    modelo, feature_names, encoders = cargar_modelo(modelo_elegido)
+    modelo, feature_names, encoders, scaler = cargar_modelo(modelo_elegido)
     cfg          = MODELOS[modelo_elegido]
-    nombre_corto = modelo_elegido.split(" ", 1)[1]  # quita el emoji
+    nombre_corto = modelo_elegido.split(" ", 1)[1]
 
     st.markdown("---")
     titulo_seccion("Sensory Scoring")
 
+    # Inputs sensoriales — siempre presentes en todos los modelos
     aroma      = st.slider("Fragrance / Aroma", 0.0, 10.0, 5.0, 0.25)
     flavor     = st.slider("Flavor",            0.0, 10.0, 5.0, 0.25)
     aftertaste = st.slider("Aftertaste",        0.0, 10.0, 5.0, 0.25)
@@ -332,12 +278,10 @@ with st.sidebar:
     body       = st.slider("Body",              0.0, 10.0, 5.0, 0.25)
     balance    = st.slider("Balance",           0.0, 10.0, 5.0, 0.25)
 
-    if cfg["usa_uniformity"]:
-        uniformity = st.slider("Uniformity", 0.0, 10.0, 5.0, 0.25)
-    if cfg["usa_clean_cup"]:
-        clean_cup  = st.slider("Clean Cup",  0.0, 10.0, 5.0, 0.25)
-    if cfg["usa_sweetness"]:
-        sweetness  = st.slider("Sweetness",  0.0, 10.0, 5.0, 0.25)
+    # Ahora los condicionales usan feature_names
+    if "Uniformity"  in feature_names: uniformity = st.slider("Uniformity", 0.0, 10.0, 5.0, 0.25)
+    if "Clean Cup"   in feature_names: clean_cup  = st.slider("Clean Cup",  0.0, 10.0, 5.0, 0.25)
+    if "Sweetness"   in feature_names: sweetness  = st.slider("Sweetness",  0.0, 10.0, 5.0, 0.25)
 
     st.markdown("---")
     titulo_seccion("Physical Data")
@@ -347,7 +291,7 @@ with st.sidebar:
     cat2_defects = st.number_input("Category Two Defects", 0,   50,    4)
     quakers      = st.number_input("Quakers",              0,   50,    0)
 
-    if cfg["usa_altitud"]:
+    if "altitud_limpia"    in feature_names:
         altitud = st.number_input("Altitud (metros)", 100, 3500, 1500)
 
     st.markdown("---")
@@ -358,10 +302,10 @@ with st.sidebar:
     color = st.selectbox("Color",
                             options=encoders["Color"].classes_.tolist())
 
-    if cfg["usa_processing"]:
+    if "Processing Method" in feature_names:
         metodo = st.selectbox("Processing Method",
                                 options=sorted(encoders["Processing Method"].classes_.tolist()))
-    if cfg["usa_variety"]:
+    if "Variety"           in feature_names:
         variedad = st.selectbox("Variety",
                                 options=sorted(encoders["Variety"].classes_.tolist()))
 
@@ -379,12 +323,9 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
+    # ── Construir el dict de inputs aquí en el sidebar ────────────────────────
 
-# ══════════════════════════════════════════════════════════════════════════════
-# BLOQUE 6 — Función de predicción
-# ══════════════════════════════════════════════════════════════════════════════
-def predecir() -> dict:
-    inputs = {
+    inputs_formulario = {
         "Aroma"               : aroma,
         "Flavor"              : flavor,
         "Aftertaste"          : aftertaste,
@@ -398,22 +339,32 @@ def predecir() -> dict:
         "Country of Origin"   : pais,
         "Color"               : color,
     }
+    if "Uniformity"        in feature_names: inputs_formulario["Uniformity"]        = uniformity
+    if "Clean Cup"         in feature_names: inputs_formulario["Clean Cup"]         = clean_cup
+    if "Sweetness"         in feature_names: inputs_formulario["Sweetness"]         = sweetness
+    if "altitud_limpia"    in feature_names: inputs_formulario["altitud_limpia"]    = altitud
+    if "Processing Method" in feature_names: inputs_formulario["Processing Method"] = metodo
+    if "Variety"           in feature_names: inputs_formulario["Variety"]           = variedad
 
-    if cfg["usa_uniformity"]:  inputs["Uniformity"]         = uniformity
-    if cfg["usa_clean_cup"]:   inputs["Clean Cup"]          = clean_cup
-    if cfg["usa_sweetness"]:   inputs["Sweetness"]          = sweetness
-    if cfg["usa_altitud"]:     inputs["altitud_limpia"]     = altitud
-    if cfg["usa_processing"]:  inputs["Processing Method"]  = metodo
-    if cfg["usa_variety"]:     inputs["Variety"]            = variedad
 
-    df = pd.DataFrame([inputs])
+# ══════════════════════════════════════════════════════════════════════════════
+# BLOQUE 6 — Función de predicción
+# ══════════════════════════════════════════════════════════════════════════════
+def predecir(inputs: dict) -> dict:
+    # Filtrar solo las columnas que usa este modelo y ordenarlas correctamente
+    df = pd.DataFrame([{k: inputs[k] for k in feature_names}])
 
-    for col in cfg["cols_cat"]:
-        le    = encoders[col]
-        valor = str(df[col].iloc[0])
-        df[col] = le.transform([valor])[0] if valor in le.classes_ else 0
+    # Encoding de categóricas — categóricas que usó este modelo, sin necesidad de declararlo a mano
+    for col in encoders.keys():
+        if col in df.columns:
+            le    = encoders[col]
+            valor = str(df[col].iloc[0])
+            df[col] = le.transform([valor])[0] if valor in le.classes_ else 0
 
-    df         = df[feature_names]
+    # Aplicar scaler si existe (necesario para modelos como Logistic Regression)
+    if scaler is not None:
+        df = pd.DataFrame(scaler.transform(df), columns=feature_names)
+
     prediccion = modelo.predict(df)[0]
     prob       = modelo.predict_proba(df)[0][1]
 
@@ -428,10 +379,10 @@ def predecir() -> dict:
 # BLOQUE 7 — Radar chart sensorial
 # ══════════════════════════════════════════════════════════════════════════════
 def grafico_radar(valores: dict) -> plt.Figure:
-    cats  = list(valores.keys())
-    vals  = list(valores.values()) + [list(valores.values())[0]]
-    n     = len(cats)
-    angs  = [i * 2 * np.pi / n for i in range(n)] + [0]
+    cats = list(valores.keys())
+    vals = list(valores.values()) + [list(valores.values())[0]]
+    n    = len(cats)
+    angs = [i * 2 * np.pi / n for i in range(n)] + [0]
 
     fig, ax = plt.subplots(figsize=(4, 4), subplot_kw=dict(polar=True))
     fig.patch.set_facecolor("#FFFFFF")
@@ -451,17 +402,13 @@ def grafico_radar(valores: dict) -> plt.Figure:
 # ══════════════════════════════════════════════════════════════════════════════
 # BLOQUE 8 — Cabecera principal
 # ══════════════════════════════════════════════════════════════════════════════
-st.markdown(f"""
-<div style="padding: 8px 0 28px 0;">
+st.markdown("""
+<div style="padding:8px 0 28px 0;">
     <h1 style="font-family:'DM Sans',sans-serif;font-weight:700;
         font-size:clamp(1.8rem,3vw,2.8rem);color:#1A2E22;
         letter-spacing:-0.02em;margin:12px 0 6px 0;">
         Digital Q-Grader AI <span style="color:#16A34A;"></span>
     </h1>
-    <p style="color:#6B7F73;font-size:0.95rem;margin:0;">
-        Configura el lote en el panel izquierdo y pulsa
-        <strong style="color:#16A34A;">New Assessment</strong>.
-    </p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -479,11 +426,13 @@ with tab_clasif:
 
     if clasificar_btn:
 
-        resultado = predecir()
-        prob      = resultado["probabilidad"]
+        # predecir() lea las variables globales directamente
+        resultado = predecir(inputs_formulario)
+        prob = resultado["probabilidad"]
         specialty = resultado["es_specialty"]
+        c = colores_resultado(specialty)
 
-        # Guardar en historial (máximo 20 entradas)
+        # Historial solo guarda los campos que realmente
         st.session_state.historial.insert(0, {
             "hora"        : datetime.now().strftime("%H:%M:%S"),
             "fecha"       : datetime.now().strftime("%d/%m/%Y"),
@@ -497,37 +446,30 @@ with tab_clasif:
         })
         st.session_state.historial = st.session_state.historial[:20]
 
-        # ── Colores según resultado ───────────────────────────────────────────
-        color_r  = "#16A34A" if specialty else "#DC2626"
-        bg_r     = "#F0F7F3" if specialty else "#FEF2F2"
-        border_r = "#D1E8DA" if specialty else "#FECACA"
-        icono    = "✅" if specialty else "❌"
-        sub      = "SCAA Protocol Compliant" if specialty else "Does not meet threshold (82.5 pts)"
-
         # ── Tarjeta de resultado ──────────────────────────────────────────────
         st.markdown(f"""
-        <div style="background:{bg_r};border:1px solid {border_r};border-radius:20px;
-            padding:32px 40px;text-align:center;margin-bottom:24px;">
+        <div style="background:{c['bg']};border:1px solid {c['border']};
+            border-radius:20px;padding:32px 40px;text-align:center;margin-bottom:24px;">
             <div style="color:#6B7F73;font-size:0.7rem;text-transform:uppercase;
                 letter-spacing:0.14em;font-weight:600;margin-bottom:10px;">
                 Final Certification
             </div>
             <div style="font-family:'DM Sans',sans-serif;font-weight:700;
-                font-size:clamp(1.8rem,4vw,2.8rem);color:{color_r};margin-bottom:8px;">
-                {icono} {resultado['etiqueta']}
+                font-size:clamp(1.8rem,4vw,2.8rem);color:{c['text']};margin-bottom:8px;">
+                {c['icono']} {resultado['etiqueta']}
             </div>
-            <div style="color:#6B7F73;font-size:0.85rem;margin-bottom:20px;">{sub}</div>
+            <div style="color:#6B7F73;font-size:0.85rem;margin-bottom:20px;">{c['sub']}</div>
             <div style="display:inline-block;background:#FFFFFF;
-                border:1px solid {border_r};border-radius:12px;padding:10px 32px;">
+                border:1px solid {c['border']};border-radius:12px;padding:10px 32px;">
                 <span style="font-family:'DM Mono',monospace;font-size:2.2rem;
-                    font-weight:600;color:{color_r};">{prob}%</span>
+                    font-weight:600;color:{c['text']};">{prob}%</span>
                 <span style="color:#6B7F73;font-size:0.72rem;display:block;
                     letter-spacing:0.1em;text-transform:uppercase;">Confidence</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # ── Métricas del modelo activo ────────────────────────────────────────
+        # ── Métricas del modelo ───────────────────────────────────────────────
         cols_met = st.columns(len(cfg["metricas"]))
         for col, (k, v) in zip(cols_met, cfg["metricas"].items()):
             with col:
@@ -535,7 +477,7 @@ with tab_clasif:
 
         st.divider()
 
-        # ── Radar + Sensory report ────────────────────────────────────────────
+        # Radar + Sensory report
         col_radar, col_report = st.columns(2)
 
         with col_radar:
@@ -551,11 +493,11 @@ with tab_clasif:
 
             for nombre_s, valor_s in {
                 "Fragrance / Aroma": aroma, "Flavor": flavor,
-                "Aftertaste": aftertaste, "Acidity": acidity,
-                "Body": body, "Balance": balance,
+                "Aftertaste": aftertaste,   "Acidity": acidity,
+                "Body": body,               "Balance": balance,
             }.items():
-                pct    = int((valor_s / 10) * 100)
-                c_bar  = "#16A34A" if valor_s >= 7.5 else ("#F59E0B" if valor_s >= 6.0 else "#DC2626")
+                pct   = int((valor_s / 10) * 100)
+                c_bar = "#16A34A" if valor_s >= 7.5 else ("#F59E0B" if valor_s >= 6.0 else "#DC2626")
                 st.markdown(f"""
                 <div style="margin-bottom:10px;">
                     <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
@@ -579,13 +521,12 @@ with tab_clasif:
                     🌍 <strong>{pais}</strong><br>
                     🎨 Color: <strong>{color}</strong><br>
                     💧 Moisture: <strong>{moisture}%</strong><br>
-                    🤖 Model: <strong>{nombre_corto}</strong>
+                    👾 Model: <strong>{nombre_corto}</strong>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
     else:
-        # ── Estado inicial ────────────────────────────────────────────────────
         st.markdown("""
         <div style="text-align:center;padding:70px 20px;background:#FFFFFF;
             border:1px dashed #D1E8DA;border-radius:20px;margin-top:8px;">
@@ -633,7 +574,6 @@ with tab_hist:
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        # ── Resumen rápido ────────────────────────────────────────────────────
         n_spec  = sum(1 for h in st.session_state.historial if h["es_specialty"])
         n_no    = len(st.session_state.historial) - n_spec
         p_media = round(np.mean([h["probabilidad"] for h in st.session_state.historial]), 1)
@@ -645,25 +585,22 @@ with tab_hist:
 
         st.divider()
 
-        # ── Tarjetas del historial ────────────────────────────────────────────
         for h in st.session_state.historial:
-            c_h = "#16A34A" if h["es_specialty"] else "#DC2626"
-            bg_h     = "#F0F7F3" if h["es_specialty"] else "#FEF2F2"
-            border_h = "#D1E8DA" if h["es_specialty"] else "#FECACA"
-
+            c_h = colores_resultado(h["es_specialty"])
             st.markdown(f"""
             <div style="display:flex;justify-content:space-between;align-items:center;
-                background:{bg_h};border:1px solid {border_h};border-radius:12px;
+                background:{c_h['bg']};border:1px solid {c_h['border']};border-radius:12px;
                 padding:14px 20px;margin-bottom:10px;">
                 <div style="display:flex;align-items:center;gap:16px;">
-                    <div style="background:#FFFFFF;border:1px solid {border_h};color:{c_h};
-                        border-radius:10px;padding:6px 16px;font-family:'DM Mono',monospace;
-                        font-weight:700;font-size:1rem;text-align:center;">
+                    <div style="background:#FFFFFF;border:1px solid {c_h['border']};
+                        color:{c_h['text']};border-radius:10px;padding:6px 16px;
+                        font-family:'DM Mono',monospace;font-weight:700;
+                        font-size:1rem;text-align:center;">
                         {h['probabilidad']}%
                     </div>
                     <div>
                         <div style="color:#1A2E22;font-size:0.9rem;font-weight:600;">
-                            {"✅" if h["es_specialty"] else "❌"} {h['resultado']}
+                            {c_h['icono']} {h['resultado']}
                         </div>
                         <div style="color:#6B7F73;font-size:0.75rem;margin-top:3px;">
                             {h['modelo']} · {h['pais']} · Aroma {h['aroma']} · Flavor {h['flavor']}
