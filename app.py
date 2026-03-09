@@ -167,17 +167,7 @@ MODELOS = {
             "Overfitting": "+0.014  ✅",
         },
     },
-
-        " XGBoost 2": {
-        "path"    : Path("models/Juanma"),
-        "metricas": {
-            "F1-Score"   : "0.947",
-            "CV F1 Media": "0.931 ± 0.021",
-            "ROC-AUC"    : "0.970",
-            "Overfitting": "+0.008  ✅",
-        },
-    },
-
+    
 }
 
 
