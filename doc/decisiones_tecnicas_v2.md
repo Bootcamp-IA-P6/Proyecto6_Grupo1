@@ -62,7 +62,7 @@ aprendizaje sin dividir roles artificialmente.
 
 ### ¿Se justifica que cada uno haya entrenado con variables diferentes?
 
-**Sí. Tiene nombre técnico: experimentación paralela de feature engineering.**
+**Sí.**
 
 Cada miembro exploró un espacio de features distinto de forma independiente.
 Esto no es un error de coordinación — es una ventaja metodológica real que permite
@@ -77,7 +77,7 @@ comparar no solo algoritmos, sino el impacto del feature engineering en el rendi
 **Requisito para que sea válido:** todos deben haber usado:
 - Mismo CSV de entrada: `coffee_quality_eda_fusion.csv`
 - `test_size=0.2` con `stratify=y` y `random_state=42`
-- F1 como métrica principal + ROC-AUC como secundaria
+- F1 como métrica principal + ROC-AUC como secundaria + Recall
 
 > 💡 Verificación: si `print(X_test.shape, y_test.sum())` da el mismo resultado
 > en todos los notebooks, los splits son idénticos y las métricas son directamente comparables.
@@ -133,8 +133,7 @@ Umbral 0.45 → Recall=0.9820 | Precision=0.9213 | F1=0.9507  ← más Recall
 Umbral 0.40 → Recall=0.9880 | Precision=0.9100 | F1=0.9475
 ```
 
-> ✅ Nuestro RF ya tiene Recall=0.976 de base — en este escenario no sería
-> necesario cambiar nada más que documentar la decisión.
+> ✅ Nuestro RF ya tiene Recall=0.976 de base — en este escenario no sería necesario cambiar nada más que documentar la decisión.
 
 ---
 
@@ -181,19 +180,18 @@ y_pred = (modelo.predict_proba(X_test)[:, 1] >= umbral).astype(int)
 
 ### 🔑 Decisión del equipo
 
-> **[PENDIENTE — definir en equipo antes de la presentación]**
->
 >**Elegido el Escenario A**
 >
->*Pensamos que es más interesante enfocarnos en el negocio y venta del café a su correcto precio porqque habrá muchas más empresas aunque sean pequeñas que estén más interesadas en la venta que en la certificación para concurso.*
->
-> Opciones:
-> - Elegir uno de los dos escenarios y justificarlo según el usuario principal
-> - Presentar ambos escenarios en el Streamlit con un selector de perfil de usuario
+>*Pensamos que es más interesante enfocarnos en el negocio y venta del café a su correcto precio porque habrá muchas más empresas aunque sean pequeñas que estén más interesadas en la venta que en la certificación para concurso.*
+
+>*También es muy importante para las empresas que envíen a certificar sólolo lotes de café Specialty y no cualquier lote. Obtendrán ahorro de logística, dinero, recursos humanos, etc.*
+
 
 **Importante:** si el escenario se decide después del entrenamiento, no es necesario
 reentrenar. Basta con ajustar el umbral de decisión. Solo hay que reentrenar si
 el Recall o Precision objetivo no se alcanza ni siquiera moviendo el umbral.
+
+![alt text](matriz-correlacion.png)
 
 ---
 
@@ -231,6 +229,8 @@ los registros. Una variable sin varianza no discrimina entre clases.
 > ✅ **Efecto secundario positivo:** en el dataset fusionado con los datos de 2018,
 > Uniformity y Sweetness sí tienen varianza real (valores entre 6 y 10).
 > Podrían recuperarse en versiones futuras del modelo.
+
+![alt text](boxplot.png)
 
 ---
 
@@ -285,6 +285,8 @@ df_2018.loc[
 ] = np.nan
 ```
 
+![alt text](altitud.png)
+
 ---
 
 ### 🟡 Problema 6 — Desbalance de clases (~55/45)
@@ -298,6 +300,8 @@ Prácticamente balanceado, pero se aplican medidas preventivas.
 | En XGBoost | `scale_pos_weight = n_neg/n_pos` | XGBoost |
 | En la validación | `stratify=y` en el split | Train/Test split |
 | En las métricas | Priorizar F1 y ROC-AUC sobre Accuracy | Evaluación de modelos |
+
+![alt text](distribucion.png)
 
 ---
 
@@ -336,10 +340,13 @@ El notebook de comparación carga los `.pkl` directamente sin reconstruir nada d
 
 ```python
 # Cada miembro añade al final de su notebook de modelado:
-joblib.dump(X_train, '../[Miembro]/models/X_train.pkl')
-joblib.dump(X_test,  '../[Miembro]/models/X_test.pkl')
-joblib.dump(y_train, '../[Miembro]/models/y_train.pkl')
-joblib.dump(y_test,  '../[Miembro]/models/y_test.pkl')
+joblib.dump(X_train, '../models/[Miembro]/X_train.pkl')
+joblib.dump(X_test,  '../models/[Miembro]/X_test.pkl')
+joblib.dump(y_train, '../models/[Miembro]/y_train.pkl')
+joblib.dump(y_test,  '../models/[Miembro]/y_test.pkl')
+
+joblib.dump(encoders,  '../models/[Miembro]/encoders.pkl')
+joblib.dump(feature_names,  '../models/[Miembro]/feature_names.pkl')
 ```
 
 ---
@@ -368,16 +375,6 @@ joblib.dump(y_test,  '../[Miembro]/models/y_test.pkl')
 
 ---
 
-### 🟡 Problema 11 — Bugs de tipos de datos en el pipeline
-
-| Bug | Causa | Solución |
-|-----|-------|----------|
-| `quality_label` todo 0 | `.map()` fallaba por StringDtype silencioso | Versión robusta con `.astype(str).str.strip().str.title().map({...})` |
-| `could not convert string to float: 'Green'` | Celda LabelEncoder ausente | Añadir celda encoding categóricas DESPUÉS del VIF |
-| `select_dtypes('object')` no capturaba categóricas | SimpleImputer cambia dtype a StringDtype | Añadir `astype(str)` en todas las categóricas tras imputar |
-| `Unnamed: 0` con correlación -0.65 | `to_csv()` sin `index=False` | Siempre `index=False` al guardar |
-
----
 
 ## 5. Decisiones de Diseño Justificadas
 
@@ -423,14 +420,18 @@ El Recall es idéntico en ambos (0.9760). No hay trade-off que justifique el cam
 > **Regla aplicada:** cuando la mejora en CV F1 Media es marginal (< 0.01) y
 > otras métricas empeoran, el modelo más simple gana por parsimonia.
 
+---
+
 ### Resultados de Camila
 
-| Modelo | Accuracy | Precision | Recall | F1 | ROC-AUC | CV F1 Media | CV F1 Std |
-|--------|----------|-----------|--------|----|---------|-------------|-----------|
-| Arbol de Decisión | 0.9046 | 0.? | 0.? | 0.9145 | 0.9535 | 0.? | 0.? |
-| XGBoost | 0.9507 | 0.? | 0.? | 0.9552 | 0.9904 | 0.? | 0.? |
+| Modelo | Accuracy | F1 | ROC-AUC |
+|--------|----------|----|---------|
+| Arbol de Decisión | 0.9046 | 0.9145 | 0.9535 |
+| XGBoost | 0.9507 | 0.9552 | 0.9904 |
 
 ### Decisión: XGBoost Base como modelo ganador
+
+---
 
 ### Resultados de Juan
 
@@ -441,15 +442,18 @@ El Recall es idéntico en ambos (0.9760). No hay trade-off que justifique el cam
 
 ### Decisión: XGBoost Base como modelo ganador
 
+---
+
 ### Tabla comparativa entre miembros del equipo
 
 | Miembro | Modelo | Features | F1 Test | ROC-AUC | CV F1 Media | CV F1 Std | Overfitting |
 |---------|--------|----------|---------|---------|-------------|-----------|-------------|
-| Jonathan | Random Forest | 15 | 0.9532 | 0.9742 | 0.9324 | 0.0188 | 0.0146 |
 | Camila | XGBoost | 15 | 0.9552 | 0.9904 | 0.9449 | 0.0048 | 0.0322 |
+| Jonathan | Random Forest | 15 | 0.9532 | 0.9742 | 0.9324 | 0.0188 | 0.0146 |
 | Juan | XGBoost | 15 | 0.9390 | 0.9700 | 0.9333 | 0.0192 | 0.0086 |
 
-> ⚠️ Tabla a completar con los resultados del notebook `04_comparacion_modelos.ipynb`
+![alt text](matriz-confusion.png)
+
 
 ### Análisis de overfitting
 
@@ -513,9 +517,9 @@ Dataset 2023 (207 filas)  +  Dataset 2018 (1311 filas)
 ### Flujo de integración grupal
 
 ```
-Feature/Jonathan  +  Feature/Camila  +  Feature/Juanma
-       │                    │                       │
-       └────────────────────┼───────────────────────┘
+Feature/Jonathan + Feature/Camila + Feature/Juanma + Feature/JJ
+       │                 │                │                |
+       └────────────────────┼──────────────────────────────┘
                             ▼ Pull Requests
                        rama: union
                             │
@@ -592,11 +596,7 @@ El modelo no cambia — solo cambia quién alimenta los datos.
 
 ---
 
-## 10. Limitaciones Honestas que hay que Defender
-
-Estas limitaciones no invalidan el proyecto. Saber argumentarlas
-demuestra madurez técnica y diferencia una presentación buena de una mediocre.
-
+## 10. Limitaciones
 ---
 
 **Limitación 1 — El modelo clasifica, no evalúa**
@@ -647,7 +647,7 @@ que hoy se hace o no se hace, nunca de forma sistemática y escalable.
 
 ---
 
-## 💬 Frase de cierre para la presentación
+## 💬 Conclusión de cierre para la presentación
 
 > *"Hoy construimos la capa de inteligencia del gemelo digital:
 > dado un perfil sensorial, nuestro modelo decide con alta fiabilidad
