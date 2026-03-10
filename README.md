@@ -297,16 +297,23 @@ Proyecto6_Grupo1/
 
 Proyecto desarrollado en equipo como parte del aprendizaje de técnicas de Machine Learning aplicadas a datos reales del sector del café de especialidad.
 
-| Desarrolladores | GitHub                                            | LinkedIn                                              |
-| --------------- | ------------------------------------------------- | ----------------------------------------------------- |
-| **Jonathan**    | [GitHub](#) <!-- TODO: enlace GitHub Jonathan --> | [LinkedIn](#) <!-- TODO: enlace LinkedIn Jonathan --> |
-| **Juan Manuel** | [GitHub](#) <!-- TODO: enlace GitHub Juanma -->   | [LinkedIn](#) <!-- TODO: enlace LinkedIn Juanma -->   |
-| **Camila**      | [GitHub](#) <!-- TODO: enlace GitHub Camila -->   | [LinkedIn](#) <!-- TODO: enlace LinkedIn Camila -->   |
-| **JJ**          | [GitHub](#) <!-- TODO: enlace GitHub JJ -->       | [LinkedIn](#) <!-- TODO: enlace LinkedIn JJ -->       |
+| Nombre | Cargo         |
+| --------------- | --------------|
+| **Jonathan**    | Scrum Master |
+| **Camila**      | Product Owner |
+| **JJ**          | Data Analyst | 
+| **Juan Manuel** | Data Analyst | 
+
+
 
 **Bootcamp:** Inteligencia Artificial
+
 **Organización:** Factoría F5
+
 **Año:** 2026
+
+**Presentación:** [Google Docs](https://docs.google.com/presentation/d/1rLS3nd5Y9QWJyt28BIAYJwJMomqgeVVcXoGQ28AAaWc/edit?usp=sharing) 
+
 
 ---
 
