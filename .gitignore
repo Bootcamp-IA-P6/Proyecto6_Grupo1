@@ -242,3 +242,5 @@ data/raw/*_fusionado.csv
 # uv.lock ya está en tu árbol, normalmente se incluye, 
 # pero si quieres ignorarlo, descomenta la siguiente línea:
 # uv.lock
+
+.obsidian
