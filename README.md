@@ -23,6 +23,8 @@ El dataset fusionado contiene **1.512 lotes de café arábica** con 38 variables
 
 **Target:** `Total Cup Points ≥ 82.5` → **Specialty** | `< 82.5` → **No Specialty**
 
+> Nota: nosotros trabajamos con un valor superior al estándar del 80 puntos.
+
 ---
 
 ## 🤝 Metodología de Equipo
@@ -44,14 +46,14 @@ Siguiendo la misma dinámica, cada integrante desarrolló y entrenó su **propio
 - Ajuste de hiperparámetros con `RandomizedSearchCV` y validación cruzada estratificada.
 
 ### 3️⃣ Selección de Modelos Finales — Colaborativa
-Tras una **puesta en común de resultados** en el notebook `Comparativa_modelos.ipynb`, el equipo evaluó los tres modelos y seleccionó los dos enfoques más sólidos para integrar en la aplicación final: el **XGBoost de Camila** (mejor CV F1) y el **Random Forest de Jonathan** (mayor estabilidad).
+Tras una **puesta en común de resultados** en el notebook `Comparativa_modelos.ipynb`, el equipo evaluó los tres modelos y seleccionó los dos enfoques más sólidos para integrar en la aplicación final: el **XGBoost** (mejor CV F1) y el **Random Forest** (mayor estabilidad).
 
 ---
 
 ## 🧠 Los Modelos
 
 ### 🥇 Modelo XGBoost — *Camila* (`models/Camila/model.pkl`)
-> **"Máxima precisión con el menor overfitting"**
+> **"Máxima precisión"**
 
 El modelo ganador de la comparativa. Entrenado con **XGBClassifier** sobre 15 features, logra el mejor equilibrio entre rendimiento en test y generalización.
 
@@ -130,7 +132,7 @@ Los análisis exploratorios del equipo convergieron en los siguientes *insights*
 
 - **🏔️ Altitud** (`altitud_limpia`) aparece como variable relevante en el modelo de Jonathan (VIF = 13.5), lo que confirma la relación conocida entre altitud y complejidad aromática del café.
 
-- **⚠️ Multicolinealidad alta** entre las puntuaciones sensoriales (Flavor, Aftertaste, Balance, Acidity, Body presentan VIF > 1000). No es crítica para Random Forest y XGBoost, pero invalida la Regresión Logística como modelo en este dataset.
+- **⚠️ Multicolinealidad alta** entre las puntuaciones sensoriales (Flavor, Aftertaste, Balance, Acidity, Body presentan VIF > 1000). No es crítica para Random Forest y XGBoost.
 
 - **📊 Dataset ligeramente desbalanceado:** 834 Specialty (55%) vs 678 No Specialty (45%) — manejable sin técnicas de resampling, gestionado con `class_weight='balanced'` en Random Forest.
 
@@ -140,26 +142,28 @@ Los análisis exploratorios del equipo convergieron en los siguientes *insights*
 
 La app se llama **Digital Q-Grader AI** y está construida con **Streamlit** con diseño personalizado en paleta verde café, tipografía **DM Sans / DM Mono** y CSS inyectado.
 
+![Interfaz1](./assets/image.png)
+![Interfaz2](./assets/image2.png)
 ### Panel Lateral — Sidebar
 
 El sidebar es el **centro de control** de la aplicación:
 
-**`🔘 Selector de modelo`** — Radio button toggle que permite cambiar entre XGBoost (Camila) y Random Forest (Jonathan). La selección actualiza dinámicamente las métricas visibles en la zona de resultados.
+**`🔘 Selector de modelo`** — Radio button toggle que permite cambiar entre XGBoost y Random Forest. La selección actualiza dinámicamente las métricas visibles en la zona de resultados.
 
 **`📝 Formulario de evaluación del lote`** — Inputs para las características sensoriales y físicas del café:
 
-| Input | Tipo | Rango |
-|---|---|---|
-| 🌍 País de origen | `selectbox` | 38 países |
-| 🌸 Aroma | `slider` | 0 – 10 |
-| ☕ Flavor | `slider` | 0 – 10 |
-| 🍃 Aftertaste | `slider` | 0 – 10 |
-| 🍋 Acidity | `slider` | 0 – 10 |
-| 💪 Body | `slider` | 0 – 10 |
-| ⚖️ Balance | `slider` | 0 – 10 |
-| 🎨 Color | `selectbox` | Blue-Green, Green... |
-| 💧 Moisture | `number_input` | 0 – 100% |
-| + otras features | varios | — |
+| Input             | Tipo           | Rango                |
+| ----------------- | -------------- | -------------------- |
+| 🌍 País de origen | `selectbox`    | 38 países            |
+| 🌸 Aroma          | `slider`       | 0 – 10               |
+| ☕ Flavor          | `slider`       | 0 – 10               |
+| 🍃 Aftertaste     | `slider`       | 0 – 10               |
+| 🍋 Acidity        | `slider`       | 0 – 10               |
+| 💪 Body           | `slider`       | 0 – 10               |
+| ⚖️ Balance        | `slider`       | 0 – 10               |
+| 🎨 Color          | `selectbox`    | Blue-Green, Green... |
+| 💧 Moisture       | `number_input` | 0 – 100%             |
+| + otras features  | varios         | —                    |
 
 **`⚡ Botón "New Assessment"`** — Botón verde de ancho completo que lanza la clasificación y transforma la zona central con los resultados.
 
@@ -173,52 +177,37 @@ Al pulsar el botón, se muestra el panel de resultados:
 
 Muestra el veredicto **Specialty / No Specialty** con la probabilidad de confianza en formato grande (`DM Mono`), con código de colores:
 
-| Resultado | Color | Significado |
-|---|---|---|
-| ✅ Specialty Coffee | Verde `#16A34A` | Supera el estándar SCA (≥ 82.5 pts) |
-| ❌ No Specialty | Rojo `#DC2626` | Por debajo del umbral SCA |
+| Resultado          | Significado                         |
+| ------------------ | ----------------------------------- |
+| ✅ Specialty Coffee | Supera el estándar SCA (≥ 82.5 pts) |
+| ❌ No Specialty     | Por debajo del umbral SCA           |
 
 **`📊 Métricas del modelo activo`** — Fila de tarjetas con F1-Score, CV F1 Media, ROC-AUC y estado de overfitting del modelo seleccionado.
 
-**`🕸️ Coffee Profile Map`** (columna izquierda) — Gráfico radar de Matplotlib que muestra el perfil sensorial completo del lote: Aroma, Flavor, Aftertaste, Acidity, Body, Balance. Permite visualizar de un vistazo las fortalezas y debilidades del café evaluado.
+**`🕸️ Coffee Profile Map`** (columna izquierda) — Gráfico radar de Matplotlib que muestra el perfil sensorial completo del lote.
 
 **`📋 Sensory Analysis Report`** (columna derecha) — Barras de progreso para cada atributo sensorial con código de colores:
 
-| Rango | Color |
-|---|---|
-| ≥ 7.5 | 🟢 Verde — excelente |
-| 6.0 – 7.4 | 🟡 Ámbar — aceptable |
-| < 6.0 | 🔴 Rojo — por debajo del estándar |
+| Rango     | Color                             |
+| --------- | --------------------------------- |
+| ≥ 7.5     | 🟢 Verde — excelente              |
+| 6.0 – 7.4 | 🟡 Ámbar — aceptable              |
+| < 6.0     | 🔴 Rojo — por debajo del estándar |
 
 **`🕓 Pestaña Historial`** — Registro de todas las clasificaciones de la sesión con métricas de resumen (total Specialty, total No Specialty, confianza media) y tarjetas individuales por evaluación.
 
 ---
-
-## 🎨 Diseño y Estilo
-
-La aplicación usa CSS personalizado inyectado con `st.markdown(..., unsafe_allow_html=True)`:
-
-- **Paleta:** verde café `#16A34A` como color dominante sobre fondo `#F8FAF9` (blanco roto cálido).
-- **Sidebar:** fondo `#F0F7F3` con borde `#D1E8DA` — evoca el verde de las hojas de cafeto.
-- **Tipografía:** `DM Sans` para texto corrido, `DM Mono` para valores numéricos y métricas.
-- **Cards:** fondo blanco `#FFFFFF` con borde `#D1E8DA`, `border-radius: 16px` y sombra difusa verde.
-- **Radio toggle:** selector personalizado que oculta los radio buttons nativos y simula un toggle pill.
-- **Botón:** verde sólido con `box-shadow` verde y animación `translateY(-2px)` en hover.
-- **Inputs:** fondo `#FFFFFF`, borde que resalta en verde al hacer focus con glow exterior.
-
----
-
 ## 🛠️ Tecnologías Utilizadas
 
-| Categoría | Herramientas |
-|---|---|
-| **Lenguaje** | Python 3.13 |
-| **Machine Learning** | Scikit-Learn, XGBoost |
-| **Manipulación de datos** | Pandas, NumPy |
-| **Visualización** | Matplotlib, Seaborn |
-| **Despliegue UI** | Streamlit |
-| **Serialización de modelos** | Joblib (`.pkl`) |
-| **Gestión de dependencias** | uv |
+| Categoría                    | Herramientas          |
+| ---------------------------- | --------------------- |
+| **Lenguaje**                 | Python 3.12.12        |
+| **Machine Learning**         | Scikit-Learn, XGBoost |
+| **Manipulación de datos**    | Pandas, NumPy         |
+| **Visualización**            | Matplotlib, Seaborn   |
+| **Despliegue UI**            | Streamlit             |
+| **Serialización de modelos** | Joblib (`.pkl`)       |
+| **Gestión de dependencias**  | uv                    |
 
 ---
 
@@ -308,12 +297,12 @@ Proyecto6_Grupo1/
 
 Proyecto desarrollado en equipo como parte del aprendizaje de técnicas de Machine Learning aplicadas a datos reales del sector del café de especialidad.
 
-| Desarrolladores | GitHub | LinkedIn |
-|----------------|--------|----------|
-| **Jonathan** | [GitHub](#) <!-- TODO: enlace GitHub Jonathan --> | [LinkedIn](#) <!-- TODO: enlace LinkedIn Jonathan --> |
-| **Juan Manuel** | [GitHub](#) <!-- TODO: enlace GitHub Juanma --> | [LinkedIn](#) <!-- TODO: enlace LinkedIn Juanma --> |
-| **Camila** | [GitHub](#) <!-- TODO: enlace GitHub Camila --> | [LinkedIn](#) <!-- TODO: enlace LinkedIn Camila --> |
-| **JJ** | [GitHub](#) <!-- TODO: enlace GitHub JJ --> | [LinkedIn](#) <!-- TODO: enlace LinkedIn JJ --> |
+| Desarrolladores | GitHub                                            | LinkedIn                                              |
+| --------------- | ------------------------------------------------- | ----------------------------------------------------- |
+| **Jonathan**    | [GitHub](#) <!-- TODO: enlace GitHub Jonathan --> | [LinkedIn](#) <!-- TODO: enlace LinkedIn Jonathan --> |
+| **Juan Manuel** | [GitHub](#) <!-- TODO: enlace GitHub Juanma -->   | [LinkedIn](#) <!-- TODO: enlace LinkedIn Juanma -->   |
+| **Camila**      | [GitHub](#) <!-- TODO: enlace GitHub Camila -->   | [LinkedIn](#) <!-- TODO: enlace LinkedIn Camila -->   |
+| **JJ**          | [GitHub](#) <!-- TODO: enlace GitHub JJ -->       | [LinkedIn](#) <!-- TODO: enlace LinkedIn JJ -->       |
 
 **Bootcamp:** Inteligencia Artificial
 **Organización:** Factoría F5
