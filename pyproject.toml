@@ -15,4 +15,3 @@ dependencies = [
     "streamlit>=1.55.0",
     "xgboost>=3.2.0",
 ]
-
