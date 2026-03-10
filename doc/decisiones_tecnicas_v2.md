@@ -184,12 +184,14 @@ y_pred = (modelo.predict_proba(X_test)[:, 1] >= umbral).astype(int)
 >
 >*Pensamos que es más interesante enfocarnos en el negocio y venta del café a su correcto precio porque habrá muchas más empresas aunque sean pequeñas que estén más interesadas en la venta que en la certificación para concurso.*
 
->*También es muy importante para las empresas que envíen a certificar sólolo lotes de café Specialty y no cualquier lote. Obtendrán ahorro de logística, dinero, recursos humanos, etc.*
+>*También es muy importante para las empresas que envíen a certificar sólo lotes de café Specialty y no cualquier lote. Obtendrán ahorro de logística, dinero, recursos humanos, etc.*
 
 
 **Importante:** si el escenario se decide después del entrenamiento, no es necesario
 reentrenar. Basta con ajustar el umbral de decisión. Solo hay que reentrenar si
 el Recall o Precision objetivo no se alcanza ni siquiera moviendo el umbral.
+
+**matriz de correlación**
 
 ![alt text](matriz-correlacion.png)
 
@@ -344,7 +346,6 @@ joblib.dump(X_train, '../models/[Miembro]/X_train.pkl')
 joblib.dump(X_test,  '../models/[Miembro]/X_test.pkl')
 joblib.dump(y_train, '../models/[Miembro]/y_train.pkl')
 joblib.dump(y_test,  '../models/[Miembro]/y_test.pkl')
-
 joblib.dump(encoders,  '../models/[Miembro]/encoders.pkl')
 joblib.dump(feature_names,  '../models/[Miembro]/feature_names.pkl')
 ```
