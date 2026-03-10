@@ -193,7 +193,7 @@ el Recall o Precision objetivo no se alcanza ni siquiera moviendo el umbral.
 
 **matriz de correlación**
 
-![alt text](matriz-correlacion.png)
+![matriz de correlación](matriz-correlacion.png)
 
 ---
 
@@ -232,7 +232,7 @@ los registros. Una variable sin varianza no discrimina entre clases.
 > Uniformity y Sweetness sí tienen varianza real (valores entre 6 y 10).
 > Podrían recuperarse en versiones futuras del modelo.
 
-![alt text](boxplot.png)
+![boxplot](boxplot.png)
 
 ---
 
@@ -287,7 +287,7 @@ df_2018.loc[
 ] = np.nan
 ```
 
-![alt text](altitud.png)
+![gráfica altitud](altitud.png)
 
 ---
 
@@ -303,7 +303,7 @@ Prácticamente balanceado, pero se aplican medidas preventivas.
 | En la validación | `stratify=y` en el split | Train/Test split |
 | En las métricas | Priorizar F1 y ROC-AUC sobre Accuracy | Evaluación de modelos |
 
-![alt text](distribucion.png)
+![gráfica distribución target](distribucion.png)
 
 ---
 
@@ -453,7 +453,7 @@ El Recall es idéntico en ambos (0.9760). No hay trade-off que justifique el cam
 | Jonathan | Random Forest | 15 | 0.9532 | 0.9742 | 0.9324 | 0.0188 | 0.0146 |
 | Juan | XGBoost | 15 | 0.9390 | 0.9700 | 0.9333 | 0.0192 | 0.0086 |
 
-![alt text](matriz-confusion.png)
+![matriz-confusión](matriz-confusion.png)
 
 
 ### Análisis de overfitting
